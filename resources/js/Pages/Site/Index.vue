@@ -3,8 +3,10 @@
 </template>
 
 <script>
-export default {
+import GuestLayoutVue from '@/Layouts/GuestLayout.vue'
 
+export default {
+    layout: GuestLayoutVue
 }
 </script>
 
