@@ -1,0 +1,116 @@
+<template>
+  <main class="w-full h-screen flex justify-start items-start">
+    <!-- navigation -->
+    <aside
+      class="flex flex-col w-64 h-screen px-8 py-8 overflow-y-auto bg-white border-r"
+    >
+      <Link :href="route('site.index')">
+        <h4 class="font-bold text-lg text-gray-800">tidziwitsane</h4>
+      </Link>
+
+      <div class="flex flex-col justify-between flex-1 mt-10">
+        <nav class="flex-1 -mx-3 space-y-3">
+          <Link
+            v-for="(nav_link, index) in nav_links" :key="index"
+            class="flex items-center px-4 py-3 text-sm text-gray-600 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 hover:text-gray-700"
+            :class="{
+                'bg-gray-700 text-gray-50 hover:bg-gray-700 hover:text-gray-50 cursor-default' : route().current(nav_link.route)
+            }"
+            :href="route(nav_link.route)"
+          >
+            <i :class="`fa-solid fa-${nav_link.icon}`"></i>
+            <span class="mx-2 text-sm font-medium">{{ nav_link.name }}</span>
+          </Link>
+        </nav>
+
+        <div class="mt-6">
+          <!-- <div class="p-3 bg-gray-100 rounded-lg">
+            <h2 class="text-sm font-medium text-gray-800">
+              New feature availabel!
+            </h2>
+
+            <p class="mt-1 text-xs text-gray-500">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus
+              harum officia eligendi velit.
+            </p>
+
+            <img
+              class="object-cover w-full h-32 mt-2 rounded-lg"
+              src="https://images.unsplash.com/photo-1658953229664-e8d5ebd039ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&h=1374&q=80"
+              alt=""
+            />
+          </div> -->
+
+          <div class="w-full flex items-center justify-between space-x-5 mt-6">
+            <p class="flex-1 text-sm font-medium text-gray-700 truncate">{{ page.props.auth.user.name }}</p>
+
+            <Link
+              :href="route('auth.logout')"
+              method="post"
+              :preserve-state="false"
+              as="button"
+              class="text-gray-500 transition-colors duration-200 rotate-180 hover:text-blue-500"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+                />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- content -->
+    <section class="flex-1 w-full h-full bg-gray-100 py-8">
+      <slot></slot>
+    </section>
+  </main>
+</template>
+
+<script setup>
+import { usePage } from "@inertiajs/vue3"
+
+const page = usePage()
+
+const nav_links = [
+    {
+        name: 'Dashboard',
+        route: 'admin.dashboard',
+        icon: 'chart-simple'
+    },
+    {
+        name: 'Messages',
+        route: 'admin.messages',
+        icon: 'comments'
+    },
+    {
+        name: 'Content Management',
+        route: 'admin.cm',
+        icon: 'folder-open'
+    },
+    {
+        name: 'Users',
+        route: 'admin.users',
+        icon: 'user-group'
+    },
+    {
+        name: 'Settings',
+        route: 'admin.settings',
+        icon: 'gears'
+    }
+]
+</script>
+
+<style>
+</style>

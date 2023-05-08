@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,36 +15,11 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() : Response
     {
-        //
-    }
+        $users = User::query()->whereNot('type', User::TYPE_SUPER)->whereKeyNot(auth()->id())->paginate();
 
-    /**
-     * Show login form
-     */
-    public function login() : Response
-    {
-        return inertia('Auth/Login');
-    }
-
-    /**
-     * Authenticate user
-     */
-    public function authenticate(Request $request) : RedirectResponse
-    {
-        $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => ['required', Password::min(7)]
-        ]);
-
-        if (Auth::attempt($validated)) {
-            $request->session()->regenerate();
-
-            return redirect()->route('admin.dashboard');
-        }
-
-        return back()->withErrors(['email' => 'Incorrect email or password!'])->onlyInput();
+        return inertia('Dashboard/Users', ['users' => $users]);
     }
 
     /**
@@ -80,16 +56,36 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user) : RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'type' => 'nullable|numeric',
+            'password' => ['nullable', 'confirmed', Password::min(7)]
+        ]);
+
+        if (! $user) {
+            
+        }
+
+        $user->fill($validated);
+
+        $user->save();
+
+        return back();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, User $user)
     {
-        //
+        if (! $user) {
+
+        }
+
+        $user->delete();
+
+        return back();
     }
 }
