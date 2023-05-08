@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index() : Response
     {
-        $users = User::query()->whereNot('type', User::TYPE_SUPER)->whereKeyNot(auth()->id())->paginate();
+        $users = User::query()->whereNot('type', User::TYPE_SUPER)->whereKeyNot(auth()->id())->paginate(5);
 
         return inertia('Dashboard/Users', ['users' => $users]);
     }
@@ -65,7 +65,7 @@ class UserController extends Controller
         ]);
 
         if (! $user) {
-            
+
         }
 
         $user->fill($validated);

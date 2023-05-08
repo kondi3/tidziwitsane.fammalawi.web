@@ -1,56 +1,27 @@
 <template>
-  <main class="max-w-7xl mx-auto">
-    <div class="w-full bg-white p-5 rounded shadow">
-        <p class="text-sm text-gray-500">Invite a new user to the platform.</p>
-
-        <form @submit.prevent="handleInviteForm" class="w-full flex justify-start items-start space-x-4 mt-8">
-            <div class="lg:w-1/4">
-                <TextInput type="email" placeholder="Email" v-model="inviteForm.email" class="block w-full text-sm" />
-                <InputError :message="inviteForm.errors.email" class="mt-2" />
-            </div>
-            
-            <div class="lg:w-1/4">
-                <select v-model="inviteForm.user_type" class="block w-full text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm">
-                    <option value="">-- User Type --</option>
-                    <option value="0">Administrator</option>
-                    <option value="1">Manager</option>
-                    <option value="2">Employee</option>
-                </select>
-                <InputError :message="inviteForm.errors.user_type" class="mt-2" />
-            </div>
-
-            <div>
-                <PrimaryButton v-show="!alert" :disabled="inviteForm.processing" class="py-2.5 text-sm disabled:bg-gray-500">Send Invite</PrimaryButton>
-            </div>
-        </form>
-    </div>
-
-    <div class="w-full bg-white shadow rounded p-5 mt-10">
-        <div class="flex justify-between items-center">
-            <form @submit.prevent="handleSearchForm" class="w-1/4">
-                <TextInput type="text" placeholder="Search" class="text-sm block w-full" />
+  <main class="max-w-7xl mx-auto flex flex-col justify-start">
+    <div class="w-full p-5 mt-8">
+        <p class="text-sm text-gray-500">Create and manage platform users.</p>
+        <div class="w-full mt-8 flex justify-between items-center">
+            <form @submit.prevent="" class="w-1/4">
+                <TextInput type="text" placeholder="Search" class="w-full text-sm" />
             </form>
 
-            <Dropdown>
-                <template #trigger>
-                    <button class="text-xs text-gray-600 p-2 rounded hover:text-gray-800 hover:bg-gray-100 transition-colors">
-                        <i class="fa-solid fa-filter mr-2"></i>
-                        <span>Filter</span>
-                    </button>
-                </template>
-
-                <template #content>
-                    <div>
-                        
-                    </div>
-                </template>
-            </Dropdown>
+            <div>
+                <PrimaryButton @click="modal = true" class="text-sm py-2.5">
+                    <i class="fa-solid fa-plus mr-2"></i>
+                    <span>Invite User</span>
+                </PrimaryButton>
+            </div>
         </div>
+    </div>
 
-        <div class="w-full mt-8">
+    <!-- table -->
+    <div class="w-full flex-1 p-5 mt-10">
+        <div class="w-full">
             <table class="w-full">
                 <thead>
-                    <tr class="text-sm text-gray-500 border-b">
+                    <tr class="text-sm text-gray-500 border-b font-medium">
                         <td class="py-2">Name</td>
                         <td>Email</td>
                         <td>Type</td>
@@ -72,7 +43,7 @@
                         <td class="py-2.5">
                             <Dropdown>
                                 <template #trigger>
-                                    <button class="px-4 py-2 rounded text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors">
+                                    <button class="px-4 py-2 rounded text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-colors">
                                         <i class="fa-solid fa-ellipsis-vertical"></i>
                                     </button>
                                 </template>
@@ -104,10 +75,39 @@
             </table>
         </div>
     </div>
+
+    <!-- pagination -->
+    <div class="mt-10 flex justify-between px-4">
+        <p class="text-sm text-gray-500">
+            Showing Page {{ users.current_page }} of {{ (users.total / users.per_page) < 1 ? 1 : Math.round((users.total / users.per_page))}}
+        </p>
+
+        <div class="flex justify-end space-x-4 text-sm">
+            <Link as="button" :href="users.prev_page_url" class="bg-white px-2.5 py-1.5 shadow rounded hover:bg-sky-500 hover:text-white transition-colors" v-if="users.prev_page_url">
+                <i class="fa-solid fa-chevron-left"></i>
+            </Link>
+
+            <Link v-for="(page_url, index) in page_urls" 
+                :key="index" as="button"
+                :href="page_url.url"  
+                class="bg-white px-2.5 py-1.5 shadow rounded hover:bg-sky-500 hover:text-white transition-colors"
+                :class="{
+                    'bg-sky-500 text-white': page_url.active
+                }" 
+                v-if="users.prev_page_url || users.next_page_url"
+            >
+                {{ page_url.label }}
+            </Link>
+
+            <Link as="button" :href="users.next_page_url" class="bg-white px-2.5 py-1.5 shadow rounded hover:bg-sky-500 hover:text-white transition-colors" v-if="users.next_page_url">
+                <i class="fa-solid fa-chevron-right"></i>
+            </Link>
+        </div>
+    </div>
   </main>
 
   <!-- alert -->
-  <div class="fixed top-10 right-10 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md" v-show="alert">
+  <div class="fixed top-10 right-10 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-xl" v-show="alert">
         <div class="flex items-center justify-center w-12 bg-emerald-500">
             <svg class="w-6 h-6 text-white fill-current" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM16.6667 28.3333L8.33337 20L10.6834 17.65L16.6667 23.6166L29.3167 10.9666L31.6667 13.3333L16.6667 28.3333Z" />
@@ -121,6 +121,40 @@
             </div>
         </div>
     </div>
+
+    <!-- side modal -->
+    <section class="absolute top-0 left-0 w-full h-screen bg-black bg-opacity-40 backdrop-blur-sm flex justify-end transition-all" v-show="modal">
+        <div class="w-1/4 h-full bg-white">
+            <form @submit.prevent="handleInviteForm">
+                <div class="px-8 py-6 flex justify-between items-center">
+                    <button type="button" @click="modal = false" class="bg-gray-100 px-2.5 py-1 rounded text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-colors">
+                        <i class="fa-solid fa-close"></i>
+                    </button>
+
+                    <PrimaryButton :disabled="inviteForm.processing" class="disabled:bg-gray-500">
+                        <span>Send Invite</span>
+                        <i class="fa-solid fa-paper-plane text-xs ml-2"></i>
+                    </PrimaryButton>
+                </div>
+
+                <div class="px-8 mt-10">
+                    <InputLabel value="Email" />
+                    <TextInput type="text" class="mt-2 block w-full" v-model="inviteForm.email" />
+                    <InputError :message="inviteForm.errors.email" class="mt-2" />
+                </div>
+
+                <div class="px-8 mt-7">
+                    <InputLabel value="User Type" />
+                    <select v-model="inviteForm.user_type" class="block w-full mt-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm">
+                        <option value="0">Administrator</option>
+                        <option value="1">Manager</option>
+                        <option value="2">Employee</option>
+                    </select>
+                    <InputError :message="inviteForm.errors.user_type" class="mt-2" />
+                </div>
+            </form>
+        </div>
+    </section>
 </template>
 
 <script>
@@ -136,27 +170,32 @@ import { useForm } from '@inertiajs/vue3'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
+import InputLabel from '@/Components/InputLabel.vue'
 import InputError from '@/Components/InputError.vue'
 import TextInput from '@/Components/TextInput.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import Dropdown from '@/Components/Dropdown.vue'
 import DropdownLink from '@/Components/DropdownLink.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 // initialize dayjs
 dayjs.extend(relativeTime)
 
-defineProps({users: Object})
+const { users } = defineProps({users: Object})
+const page_urls = computed(() => users.links.filter((_, index) => index !== 0 && index !== users.links.length-1))
+
+const modal = ref(false)
 
 const inviteForm = useForm({
     email: null,
-    user_type: ''
+    user_type: null,
 })
 
 const alert = ref(false)
 const handleInviteForm = () => {
     inviteForm.post(route('auth.invite'), {
         onSuccess: () => {
+            modal.value = false
             alert.value = true
             setTimeout(() => alert.value = false, 3000)
             inviteForm.reset().clearErrors()

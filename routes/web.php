@@ -33,7 +33,10 @@ Route::middleware('auth')->group(function (){
 Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('admin.dashboard');
     Route::get('/messages')->name('admin.messages');
-    Route::get('/cm')->name('admin.cm');
+    Route::get('/myths')->name('admin.myths');
+    Route::get('/facts')->name('admin.facts');
+    Route::get('/services')->name('admin.services');
+    Route::get('/faqs')->name('admin.faqs');
     
     Route::resource('users', UserController::class)
         ->only('index', 'update', 'destroy')
