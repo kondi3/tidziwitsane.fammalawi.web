@@ -3,6 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Dashboard\FAQ;
+use App\Models\Dashboard\Myth;
+use App\Models\Dashboard\ServiceProvider;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -52,5 +56,20 @@ class User extends Authenticatable
     public function invitations() : HasMany
     {
         return $this->hasMany(Invite::class);
+    }
+
+    public function myths() : HasMany
+    {
+        return $this->hasMany(Myth::class);
+    }
+
+    public function servicesProviders() : HasMany
+    {
+        return $this->hasMany(ServiceProvider::class);
+    }
+
+    public function faqs() : HasMany
+    {
+        return $this->hasMany(FAQ::class);
     }
 }

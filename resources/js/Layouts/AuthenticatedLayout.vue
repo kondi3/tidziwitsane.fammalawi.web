@@ -16,7 +16,7 @@
               :key="index"
               class="flex items-center px-4 py-3 text-sm text-gray-600 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 hover:text-gray-700"
               :class="{
-                'bg-gray-700 text-gray-50 hover:bg-gray-700 hover:text-gray-50 cursor-default':
+                'bg-gray-700 text-gray-100 hover:bg-gray-700 hover:text-gray-100 cursor-default':
                   route().current(nav_link.route),
               }"
               :href="route(nav_link.route)"
@@ -26,7 +26,7 @@
             </Link>
           </nav>
 
-          <nav class="mt-10 -mx-3 space-y-3">
+          <nav class="mt-5 -mx-3 space-y-3">
             <p class="text-xs text-gray-500 p-2 rounded">
               Content Management
             </p>
@@ -36,7 +36,27 @@
               :key="index"
               class="flex items-center px-4 py-3 text-sm text-gray-600 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 hover:text-gray-700"
               :class="{
-                'bg-gray-700 text-gray-50 hover:bg-gray-700 hover:text-gray-50 cursor-default':
+                'bg-gray-700 text-gray-100 hover:bg-gray-700 hover:text-gray-100 cursor-default':
+                  route().current(nav_link.route),
+              }"
+              :href="route(nav_link.route)"
+            >
+              <i :class="`fa-solid fa-${nav_link.icon}`"></i>
+              <span class="mx-2 text-sm font-medium">{{ nav_link.name }}</span>
+            </Link>
+          </nav>
+
+          <nav class="mt-5 -mx-3 space-y-3">
+            <p class="text-xs text-gray-500 p-2 rounded">
+              Settings
+            </p>
+
+            <Link
+              v-for="(nav_link, index) in settings_nav_links"
+              :key="index"
+              class="flex items-center px-4 py-3 text-sm text-gray-600 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 hover:text-gray-700"
+              :class="{
+                'bg-gray-700 text-gray-100 hover:bg-gray-700 hover:text-gray-100 cursor-default':
                   route().current(nav_link.route),
               }"
               :href="route(nav_link.route)"
@@ -47,6 +67,7 @@
           </nav>
         </div>
 
+        <!-- footer -->
         <div class="mt-6">
           <!-- <div class="p-3 bg-gray-100 rounded-lg">
             <h2 class="text-sm font-medium text-gray-800">
@@ -94,15 +115,7 @@
               </span>
             </Link>
 
-            <Link
-              :href="route('admin.settings')"
-              method="post"
-              :preserve-state="false"
-              as="button"
-              class="text-gray-500 transition-colors duration-200 hover:text-gray-900"
-            >
-              <i class="fa-solid fa-gear"></i>
-            </Link>
+            
           </div>
         </div>
       </div>
@@ -118,8 +131,8 @@
           </div>
 
           <div>
-            <button class="bg-gray-200 px-2.5 py-1.5 rounded-full">
-              <i class="fa-solid fa-bell text-gray-700"></i>
+            <button class="bg-gray-100 px-2.5 py-1.5 rounded-full text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-colors">
+              <i class="fa-solid fa-bell"></i>
             </button>
           </div>
         </div>
@@ -146,11 +159,6 @@ const nav_links = [
     route: "admin.messages",
     icon: "comments",
   },
-  {
-    name: "Users",
-    route: "admin.users",
-    icon: "user-group",
-  },
 ];
 
 const content_nav_links = [
@@ -161,13 +169,31 @@ const content_nav_links = [
   },
   {
     name: "Service Providers",
-    route: "admin.services",
+    route: "admin.providers",
     icon: "circle-info",
   },
   {
     name: "FAQs",
     route: "admin.faqs",
     icon: "circle-question",
+  },
+];
+
+const settings_nav_links = [
+  {
+    name: "Profile",
+    route: "admin.settings.profile",
+    icon: "user",
+  },
+  {
+    name: "Data Management",
+    route: "admin.settings.data",
+    icon: "file-import",
+  },
+  {
+    name: "Users",
+    route: "admin.users",
+    icon: "user-group",
   },
 ];
 </script>

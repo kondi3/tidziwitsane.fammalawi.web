@@ -3,11 +3,13 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\DashboardController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Dashboard\DataManagementController;
+use App\Http\Controllers\Dashboard\FAQController;
+use App\Http\Controllers\Dashboard\MythController;
+use App\Http\Controllers\Dashboard\ProfileController;
+use App\Http\Controllers\Dashboard\ServiceProviderController;
 use App\Http\Controllers\Site\SiteController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 // main site
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
@@ -31,13 +33,43 @@ Route::middleware('auth')->group(function (){
 
 // dashboard
 Route::middleware('auth')->prefix('admin')->group(function () {
+    // analytics
     Route::get('/dashboard', DashboardController::class)->name('admin.dashboard');
+
+    // messages
     Route::get('/messages')->name('admin.messages');
-    Route::get('/myths')->name('admin.myths');
-    Route::get('/facts')->name('admin.facts');
-    Route::get('/services')->name('admin.services');
-    Route::get('/faqs')->name('admin.faqs');
+
+    // myths and facts
+    Route::resource('myths', MythController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names([
+            'index' => 'admin.myths',
+            'store' => 'admin.myths.store',
+            'update' => 'admin.myths.update',
+            'destroy' => 'admin.myths.destroy',
+        ]);
+
+    // service providers
+    Route::resource('providers', ServiceProviderController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names([
+            'index' => 'admin.providers',
+            'store' => 'admin.providers.store',
+            'update' => 'admin.providers.update',
+            'destroy' => 'admin.providers.destroy'
+        ]);
+
+    // faqs
+    Route::resource('faqs', FAQController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names([
+            'index' => 'admin.faqs',
+            'store' => 'admin.faqs.store',
+            'update' => 'admin.faqs.update',
+            'destroy' => 'admin.faqs.destroy'
+        ]);
     
+    // users
     Route::resource('users', UserController::class)
         ->only('index', 'update', 'destroy')
         ->names([
@@ -46,5 +78,9 @@ Route::middleware('auth')->prefix('admin')->group(function () {
             'destroy' => 'admin.users.destroy'
         ]);
 
-    Route::get('/settings')->name('admin.settings');
+    // settings
+    Route::prefix('settings')->group(function () {
+        Route::get('profile', [ProfileController::class, 'index'])->name('admin.settings.profile');
+        Route::get('data', [DataManagementController::class, 'index'])->name('admin.settings.data');
+    });
 });

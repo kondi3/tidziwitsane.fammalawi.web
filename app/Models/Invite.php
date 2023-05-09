@@ -12,7 +12,7 @@ class Invite extends Model
 {
     use HasFactory, Notifiable;
 
-    protected $guarded = ['id'];
+    protected $fillable = ['uuid', 'user_id', 'user_type', 'email'];
 
     protected $dispatchesEvents = [
         'created' => UserInvitedEvent::class,

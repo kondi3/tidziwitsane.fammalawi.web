@@ -1,7 +1,10 @@
 <template>
   <main class="max-w-7xl mx-auto flex flex-col justify-start">
     <div class="w-full p-5 mt-8">
-      <p class="text-sm text-gray-500">Create and manage platform users.</p>
+      <p class="text-sm text-gray-500 lg:max-w-md">
+        Create and manage service providers here. You can also import a CSV
+        (Comma Separated Values) file from settings.
+      </p>
       <div class="w-full mt-8 flex justify-between items-center">
         <form @submit.prevent="" class="w-1/4">
           <TextInput type="text" placeholder="Search" class="w-full text-sm" />
@@ -10,7 +13,7 @@
         <div>
           <PrimaryButton @click="modal = true" class="text-sm py-2.5">
             <i class="fa-solid fa-plus mr-2"></i>
-            <span>Invite User</span>
+            <span>Add New Entry</span>
           </PrimaryButton>
         </div>
       </div>
@@ -22,27 +25,25 @@
         <table class="w-full">
           <thead>
             <tr class="text-sm text-gray-500 border-b font-medium">
-              <td class="py-2">Name</td>
-              <td>Email</td>
-              <td>Type</td>
+              <td class="py-2">Service Provider</td>
+              <td>Action</td>
+              <td>Data</td>
               <td>Added</td>
               <td>Actions</td>
             </tr>
           </thead>
 
-          <tbody v-if="users.data.length">
+          <tbody v-if="providers.data.length">
             <tr
-              v-for="(user, index) in users.data"
+              v-for="(provider, index) in providers.data"
               :key="index"
               class="text-sm text-gray-700 border-t"
             >
-              <td class="py-2.5">{{ user.name }}</td>
-              <td class="py-2.5">{{ user.email }}</td>
+              <td class="py-2.5">{{ provider.provider }}</td>
+              <td class="py-2.5 uppercase">{{ provider.action }}</td>
+              <td class="py-2.5">{{ provider.args }}</td>
               <td class="py-2.5">
-                {{ parseUserType(user.type) }}
-              </td>
-              <td class="py-2.5">
-                {{ dayjs(user.created_at).fromNow() }}
+                {{ dayjs(provider.created_at).fromNow() }}
               </td>
               <td class="py-2.5">
                 <Dropdown>
@@ -56,43 +57,16 @@
 
                   <template #content>
                     <div>
-                      <p class="px-4 py-1.5 text-xs text-gray-400">
-                        Change Type To
-                      </p>
-                      <div class="">
-                        <DropdownLink
-                          as="button"
-                          v-show="user.type !== 0"
-                          :href="route('admin.users.update', user)"
-                          method="put"
-                          :data="{ type: 0 }"
-                          >Administrator</DropdownLink
-                        >
-                        <DropdownLink
-                          as="button"
-                          v-show="user.type !== 1"
-                          :href="route('admin.users.update', user)"
-                          method="put"
-                          :data="{ type: 1 }"
-                          >Manager</DropdownLink
-                        >
-                        <DropdownLink
-                          as="button"
-                          v-show="user.type !== 2"
-                          :href="route('admin.users.update', user)"
-                          method="put"
-                          :data="{ type: 2 }"
-                          >Employee</DropdownLink
-                        >
-                      </div>
-                      <hr />
-                      <!-- <DropdownLink as="button" :href="route('admin.users.update', user)" method="post" :data="{status: 0}">
-                                            <i class="fa-solid fa-user-minus text-xs text-gray-400 mr-2"></i>
-                                            <span>Deactivate</span>
-                                        </DropdownLink> -->
+                      <button
+                        @click="update(provider)"
+                        class="block w-full px-4 py-2 text-left text-gray-600 hover:bg-gray-100"
+                      >
+                        <i class="fa-solid fa-edit mr-2 text-gray-400"></i>
+                        <span>Edit</span>
+                      </button>
                       <DropdownLink
                         as="button"
-                        :href="route('admin.users.destroy', user)"
+                        :href="route('admin.providers.destroy', provider.id)"
                         method="delete"
                       >
                         <i
@@ -109,7 +83,7 @@
 
           <tbody v-else>
             <tr class="text-gray-500 text-sm">
-                <td class="py-4">Nothing to show yet.</td>
+              <td class="py-4">Nothing to show yet.</td>
             </tr>
           </tbody>
         </table>
@@ -118,23 +92,26 @@
 
     <!-- pagination -->
     <div class="mt-10 flex justify-between px-4">
-      <p class="text-sm text-gray-500" v-if="users.prev_page_url || users.next_page_url">
-        Showing Page {{ users.current_page }} of
+      <p
+        class="text-sm text-gray-500"
+        v-if="providers.prev_page_url || providers.next_page_url"
+      >
+        Showing Page {{ providers.current_page }} of
         {{
           Math.round(
-                users.total / users.per_page < 1.5
-                  ? users.total / users.per_page + 0.5
-                  : users.total / users.per_page
-              )
+            providers.total / providers.per_page < 1.5
+              ? providers.total / providers.per_page + 0.5
+              : providers.total / providers.per_page
+          )
         }}
       </p>
 
       <div class="flex justify-end space-x-4 text-sm">
         <Link
           as="button"
-          :href="users.prev_page_url"
+          :href="providers.prev_page_url"
           class="bg-white px-2.5 py-1.5 shadow rounded hover:bg-sky-500 hover:text-white transition-colors"
-          v-if="users.prev_page_url"
+          v-if="providers.prev_page_url"
         >
           <i class="fa-solid fa-chevron-left"></i>
         </Link>
@@ -148,16 +125,16 @@
           :class="{
             'bg-sky-600 text-white': page_url.active,
           }"
-          v-show="users.prev_page_url || users.next_page_url"
+          v-show="providers.prev_page_url || providers.next_page_url"
         >
           {{ page_url.label }}
         </Link>
 
         <Link
           as="button"
-          :href="users.next_page_url"
+          :href="providers.next_page_url"
           class="bg-white px-2.5 py-1.5 shadow rounded hover:bg-sky-500 hover:text-white transition-colors"
-          v-if="users.next_page_url"
+          v-if="providers.next_page_url"
         >
           <i class="fa-solid fa-chevron-right"></i>
         </Link>
@@ -185,7 +162,7 @@
     <div class="px-4 py-2 -mx-3">
       <div class="mx-3">
         <span class="font-semibold text-emerald-500">Success</span>
-        <p class="text-sm text-gray-600">Invitation sent!</p>
+        <p class="text-sm text-gray-600">Saved your entry!</p>
       </div>
     </div>
   </div>
@@ -195,49 +172,78 @@
     class="absolute top-0 left-0 w-full h-screen bg-black bg-opacity-40 backdrop-blur-sm flex justify-end transition-all"
     v-show="modal"
   >
-    <div class="w-1/4 h-full bg-white">
-      <form @submit.prevent="handleInviteForm">
+    <div
+      class="w-1/4 h-full bg-white flex flex-col justify-between items-start"
+    >
+      <form @submit.prevent="handleNewEntryForm" class="flex-1 w-full">
         <div class="px-8 py-6 flex justify-between items-center">
           <button
             type="button"
-            @click="modal = false"
+            @click="
+              (modal = false),
+                newEntryForm.clearErrors().reset(),
+                (update_entry = null)
+            "
             class="bg-gray-100 px-2.5 py-1 rounded text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-colors"
           >
             <i class="fa-solid fa-close"></i>
           </button>
 
           <PrimaryButton
-            :disabled="inviteForm.processing"
+            :disabled="newEntryForm.processing"
             class="disabled:bg-gray-500"
           >
-            <span>Send Invite</span>
-            <i class="fa-solid fa-paper-plane text-xs ml-2"></i>
+            <span v-if="update_entry">Update</span>
+            <span v-else>Save</span>
+            <i class="fa-solid fa-save text-xs ml-2"></i>
           </PrimaryButton>
         </div>
 
         <div class="px-8 mt-10">
-          <InputLabel value="Email" />
+          <InputLabel value="Provider" />
           <TextInput
             type="text"
             class="mt-2 block w-full"
-            v-model="inviteForm.email"
+            v-model="newEntryForm.provider"
           />
-          <InputError :message="inviteForm.errors.email" class="mt-2" />
+          <InputError :message="newEntryForm.errors.provider" class="mt-2" />
         </div>
 
-        <div class="px-8 mt-7">
-          <InputLabel value="User Type" />
+        <div class="px-8 mt-10">
+          <InputLabel value="Action" />
           <select
-            v-model="inviteForm.user_type"
+            v-model="newEntryForm.action"
             class="block w-full mt-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm"
           >
-            <option value="0">Administrator</option>
-            <option value="1">Manager</option>
-            <option value="2">Employee</option>
+            <option value="geo">Map / Geo</option>
+            <option value="phone">Phone</option>
+            <option value="sms">SMS</option>
+            <option value="email">Email</option>
+            <option value="web">Web</option>
           </select>
-          <InputError :message="inviteForm.errors.user_type" class="mt-2" />
+          <InputError :message="newEntryForm.errors.action" class="mt-2" />
+        </div>
+
+        <div class="px-8 mt-10">
+          <InputLabel value="Data" />
+          <TextAreaInput
+            type="text"
+            class="mt-2 block w-full"
+            v-model="newEntryForm.args"
+          />
+          <InputError :message="newEntryForm.errors.args" class="mt-2" />
         </div>
       </form>
+
+      <div class="px-8 py-8">
+        <Link
+          :href="route('admin.settings.data')"
+          class="text-sm text-gray-500 hover:text-gray-800"
+        >
+          <i class="fa-solid fa-file-import mr-2"></i>
+          <span>Import Batch File (CSV)</span>
+        </Link>
+      </div>
     </div>
   </section>
 </template>
@@ -258,6 +264,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
+import TextAreaInput from "@/Components/TextAreaInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
@@ -266,50 +273,52 @@ import { computed, ref } from "vue";
 // initialize dayjs
 dayjs.extend(relativeTime);
 
-const { users } = defineProps({ users: Object });
+const { providers } = defineProps({ providers: Object });
+
 const page_urls = computed(() =>
-  users.links.filter(
-    (_, index) => index !== 0 && index !== users.links.length - 1
+  providers.links.filter(
+    (_, index) => index !== 0 && index !== providers.links.length - 1
   )
 );
 
 const modal = ref(false);
+const update_entry = ref(null);
 
-const inviteForm = useForm({
-  email: null,
-  user_type: null,
+const newEntryForm = useForm({
+  provider: null,
+  action: null,
+  args: null,
 });
 
 const alert = ref(false);
-const handleInviteForm = () => {
-  inviteForm.post(route("auth.invite"), {
-    onSuccess: () => {
-      modal.value = false;
-      alert.value = true;
-      setTimeout(() => (alert.value = false), 3000);
-      inviteForm.reset().clearErrors();
-    },
-  });
+const handleNewEntryForm = () => {
+  if (update_entry.value) {
+    newEntryForm.put(route("admin.providers.update", update_entry.value.id), {
+      onSuccess: () => {
+        on_success(), (update_entry.value = null);
+      },
+    });
+  } else {
+    newEntryForm.post(route("admin.providers.store"), {
+      onSuccess: on_success,
+    });
+  }
 };
 
-const parseUserType = (user_type) => {
-  let parsed;
-  switch (user_type) {
-    case -1:
-      parsed = "Super User";
-      break;
-    case 0:
-      parsed = "Administrator";
-      break;
-    case 1:
-      parsed = "Manager";
-      break;
-    case 2:
-      parsed = "Employee";
-      break;
-  }
+const update = (provider) => {
+  update_entry.value = provider;
+  newEntryForm.provider = provider.provider;
+  newEntryForm.action = provider.action;
+  newEntryForm.args = provider.args;
 
-  return parsed;
+  modal.value = true;
+};
+
+const on_success = () => {
+  modal.value = false;
+  alert.value = true;
+  setTimeout(() => (alert.value = false), 3000);
+  newEntryForm.reset().clearErrors();
 };
 </script>
 
