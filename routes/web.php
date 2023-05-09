@@ -84,5 +84,9 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::put('profile/{user}/basic', [ProfileController::class, 'updateBasic'])->name('admin.settings.profile.update.basic');
         Route::put('profile/{user}/security', [ProfileController::class, 'updatePassword'])->name('admin.settings.profile.update.security');
         Route::get('data', [DataManagementController::class, 'index'])->name('admin.settings.data');
+        Route::get('data/export/myths', [DataManagementController::class, 'exportMyths'])->name('admin.settings.data.export.myths');
+        Route::get('data/export/providers', [DataManagementController::class, 'exportProviders'])->name('admin.settings.data.export.providers');
+        Route::get('data/export/faqs', [DataManagementController::class, 'exportFAQs'])->name('admin.settings.data.export.faqs');
+        Route::post('data', [DataManagementController::class, 'import'])->name('admin.settings.data.import');
     });
 });

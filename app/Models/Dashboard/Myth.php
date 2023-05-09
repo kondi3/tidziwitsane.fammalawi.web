@@ -11,7 +11,7 @@ class Myth extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['uuid', 'user_id', 'myth', 'fact'];
+    protected $fillable = ['user_id', 'myth', 'fact'];
 
     public function getRouteKey()
     {

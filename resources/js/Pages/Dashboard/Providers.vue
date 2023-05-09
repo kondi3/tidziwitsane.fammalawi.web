@@ -40,7 +40,7 @@
               class="text-sm text-gray-700 border-t"
             >
               <td class="py-2.5">{{ provider.provider }}</td>
-              <td class="py-2.5 uppercase">{{ provider.action }}</td>
+              <td class="py-2.5">{{ provider.action }}</td>
               <td class="py-2.5">{{ provider.args }}</td>
               <td class="py-2.5">
                 {{ dayjs(provider.created_at).fromNow() }}

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('myths', function (Blueprint $table) {
             $table->id();
-            $table->string('uuid')->unique();
             $table->foreignId('user_id');
             $table->text('myth');
             $table->text('fact');
