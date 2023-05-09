@@ -81,6 +81,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // settings
     Route::prefix('settings')->group(function () {
         Route::get('profile', [ProfileController::class, 'index'])->name('admin.settings.profile');
+        Route::put('profile/{user}/basic', [ProfileController::class, 'updateBasic'])->name('admin.settings.profile.update.basic');
+        Route::put('profile/{user}/security', [ProfileController::class, 'updatePassword'])->name('admin.settings.profile.update.security');
         Route::get('data', [DataManagementController::class, 'index'])->name('admin.settings.data');
     });
 });

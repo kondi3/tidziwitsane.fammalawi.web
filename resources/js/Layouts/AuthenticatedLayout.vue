@@ -2,7 +2,7 @@
   <main class="w-full h-screen flex justify-start items-start">
     <!-- navigation -->
     <aside
-      class="flex flex-col w-64 h-screen px-8 py-8 overflow-y-auto bg-white border-r"
+      class="flex flex-col w-64 h-full px-8 py-8 overflow-y-auto bg-white border-r"
     >
       <Link :href="route('site.index')">
         <h4 class="font-bold text-lg text-gray-800">tidziwitsane</h4>
@@ -16,7 +16,7 @@
               :key="index"
               class="flex items-center px-4 py-3 text-sm text-gray-600 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 hover:text-gray-700"
               :class="{
-                'bg-gray-700 text-gray-100 hover:bg-gray-700 hover:text-gray-100 cursor-default':
+                'bg-gray-700 text-white hover:bg-gray-700 hover:text-white cursor-default':
                   route().current(nav_link.route),
               }"
               :href="route(nav_link.route)"
@@ -36,7 +36,7 @@
               :key="index"
               class="flex items-center px-4 py-3 text-sm text-gray-600 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 hover:text-gray-700"
               :class="{
-                'bg-gray-700 text-gray-100 hover:bg-gray-700 hover:text-gray-100 cursor-default':
+                'bg-gray-700 text-white hover:bg-gray-700 hover:text-white cursor-default':
                   route().current(nav_link.route),
               }"
               :href="route(nav_link.route)"
@@ -56,7 +56,7 @@
               :key="index"
               class="flex items-center px-4 py-3 text-sm text-gray-600 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 hover:text-gray-700"
               :class="{
-                'bg-gray-700 text-gray-100 hover:bg-gray-700 hover:text-gray-100 cursor-default':
+                'bg-gray-700 text-white hover:bg-gray-700 hover:text-white cursor-default':
                   route().current(nav_link.route),
               }"
               :href="route(nav_link.route)"
@@ -122,7 +122,7 @@
     </aside>
 
     <!-- content -->
-    <section class="flex-1 w-full h-full py-8 bg-gray-50">
+    <section class="flex-1 w-full h-full py-8 bg-gray-50 overflow-y-auto">
       <div class="max-w-7xl mx-auto p-5">
         <div class="flex justify-between items-center">
           <div>
