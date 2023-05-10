@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Dashboard\ChatController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\DataManagementController;
@@ -37,7 +38,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('admin.dashboard');
 
     // messages
-    Route::get('/messages')->name('admin.messages');
+    Route::get('/chats', [ChatController::class, 'index'])->name('admin.chats');
 
     // myths and facts
     Route::resource('myths', MythController::class)

@@ -17,6 +17,8 @@
         "vue": "^3.2.41"
     },
     "dependencies": {
-        "dayjs": "^1.11.7"
+        "chart.js": "^3.9.1",
+        "dayjs": "^1.11.7",
+        "vue-chart-3": "^3.1.8"
     }
 }

@@ -156,7 +156,7 @@ const nav_links = [
   },
   {
     name: "Messages",
-    route: "admin.messages",
+    route: "admin.chats",
     icon: "comments",
   },
 ];
