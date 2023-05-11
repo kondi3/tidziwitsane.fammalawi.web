@@ -4,11 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Dashboard\Chat;
 use App\Models\Dashboard\FAQ;
+use App\Models\Dashboard\Message;
 use App\Models\Dashboard\Myth;
 use App\Models\Dashboard\ServiceProvider;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -21,6 +24,7 @@ class User extends Authenticatable
     const TYPE_ADMIN = 0;
     const TYPE_MANAGER = 1;
     const TYPE_EMPLOYEE = 2;
+    const TYPE_ANONYMOUS = 3;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +32,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'uuid',
         'type',
         'name',
         'email',
@@ -71,5 +76,15 @@ class User extends Authenticatable
     public function faqs() : HasMany
     {
         return $this->hasMany(FAQ::class);
+    }
+
+    public function chat() : HasOne
+    {
+        return $this->hasOne(Chat::class);
+    }
+
+    public function messages() : HasMany
+    {
+        return $this->hasMany(Message::class);
     }
 }

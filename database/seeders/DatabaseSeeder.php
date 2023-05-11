@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         User::factory()->create([
+            'uuid' => uniqid(),
             'type' => User::TYPE_SUPER,
             'name' => 'Administrator',
             'email' => 'admin@fammalawi.org',

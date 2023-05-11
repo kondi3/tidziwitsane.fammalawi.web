@@ -39,6 +39,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
     // messages
     Route::get('/chats', [ChatController::class, 'index'])->name('admin.chats');
+    Route::post('/chats/{chat:uid}/messages', [ChatController::class, 'message'])->name('admin.chats.messages.store');
 
     // myths and facts
     Route::resource('myths', MythController::class)

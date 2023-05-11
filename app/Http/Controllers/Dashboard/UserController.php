@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index() : Response
     {
-        $users = User::query()->whereNot('type', User::TYPE_SUPER)->whereKeyNot(auth()->id())->paginate();
+        $users = User::query()->whereNot('type', User::TYPE_SUPER)->whereNot('type', User::TYPE_ANONYMOUS)->whereKeyNot(auth()->id())->paginate();
 
         return inertia('Dashboard/Users', ['users' => $users]);
     }

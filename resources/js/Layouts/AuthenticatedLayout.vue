@@ -122,8 +122,8 @@
     </aside>
 
     <!-- content -->
-    <section class="flex-1 w-full h-full py-8 bg-gray-50 overflow-y-auto">
-      <div class="max-w-7xl mx-auto p-5">
+    <section class="flex-1 w-full h-full bg-gray-50 overflow-y-auto">
+      <div class="max-w-7xl mx-auto p-5 mt-3" v-if="!route().current('admin.chats')">
         <div class="flex justify-between items-center">
           <div>
             <h4 class="tracking-wider text-sm font-bold">{{ page.props.auth.user.name }}</h4>
