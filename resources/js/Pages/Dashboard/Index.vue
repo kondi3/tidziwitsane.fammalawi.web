@@ -19,7 +19,7 @@
                 </div>
 
                 <p class="mt-8 text-5xl text-gray-700">
-                    250k
+                    {{ numeral(totals.downloads).format('0a') }}
                 </p>
             </div>
 
@@ -37,7 +37,7 @@
                 </div>
 
                 <p class="mt-8 text-5xl text-gray-700">
-                    350k
+                    {{ numeral(totals.installations).format('0a') }}
                 </p>
             </div>
 
@@ -55,13 +55,17 @@
                 </div>
 
                 <p class="mt-8 text-5xl text-gray-700">
-                    50k
+                    {{ numeral(totals.messages).format('0a') }}
                 </p>
             </div>
         </div>
 
         <div class="w-full mt-14">
-            <p>Annual Summary</p>
+            <div class="flex justify-between items-center">
+                <p>Annual Summary</p>
+
+                <!-- <TextInput type="number" class="text-sm" min="1900" :max="(new Date()).getFullYear()" :value="(new Date()).getFullYear()" /> -->
+            </div>
             <div class="mt-5">
                 <BarChart :chart-data="data" :options="chart_options" />
             </div>
@@ -81,8 +85,13 @@ export default {
 import { BarChart } from 'vue-chart-3'
 import { Chart, registerables } from 'chart.js'
 import { computed } from 'vue'
+import numeral from 'numeral'
+
+import TextInput from '@/Components/TextInput.vue'
 
 Chart.register(...registerables)
+
+const { totals, annual } = defineProps({totals: Object, annual: Object})
 
 const data = computed(() => ({
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -90,7 +99,7 @@ const data = computed(() => ({
         {
             label: 'Downloads',
             backgroundColor: 'rgba(14, 165, 233, .5)',
-            data: [50, 84, 45, 36, 47, 206, 95, 785, 52, 364, 54, 145]
+            data: [(annual.downloads.filter(x => (new Date(x.created_at)).getMonth() === 1)).length, 84, 45, 36, 47, 206, 95, 785, 52, 364, 54, 145]
         },
         {
             label: 'Installations',
