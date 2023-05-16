@@ -51,10 +51,10 @@ Route::prefix('v1')->group(function () {
             return response()->json([
                 'key' => env('PUSHER_APP_KEY', null),
                 'cluster' => env('PUSHER_APP_CLUSTER', null),
-                'host' => env('PUSHER_APP_HOST', null),
-                'port' => env('PUSHER_APP_PORT', null),
-                'scheme' => env('PUSHER_APP_SCHEME', null),
-                'forceTLS' => (env('PUSHER_APP_SCHEME') ?? 'https') === 'https',
+                'host' => env('PUSHER_HOST', null),
+                'port' => env('PUSHER_PORT', null),
+                'scheme' => env('PUSHER_SCHEME', null),
+                'forceTLS' => (env('PUSHER_SCHEME') ?? 'https') === 'https',
             ]);
         });
 
@@ -94,13 +94,13 @@ Route::prefix('v1')->group(function () {
                 $user->refresh();
             }
 
-            $user->chat->messages()->create([
+            $message = $user->chat->messages()->create([
                 'user_id' => auth()->id(),
                 'message' => $request->message,
                 'status' => Message::STATUS_SENT,
             ]);
 
-            return response()->json();
+            return $message;
         });
     });
 });
